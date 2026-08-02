@@ -27,9 +27,4 @@ class Kelurahan extends Model
     {
         return $this->belongsTo(Kecamatan::class, 'kode_kecamatan', 'kode_kecamatan');
     }
-
-    public function evaluasiKrs()
-    {
-        return $this->hasMany(EvaluasiKrs::class, 'kode_kelurahan', 'kode_kelurahan');
-    }
 }

@@ -15,35 +15,13 @@
         <p class="px-2 text-xs font-semibold tracking-[0.28em] text-slate-400 uppercase">Menu</p>
 
         <nav class="mt-4 space-y-2">
-            @if ($currentUser && $currentUser->role === 'PKK')
-                <a href="{{ route('dashboard') }}" class="flex items-center rounded-xl px-4 py-3 text-sm transition {{ request()->routeIs('dashboard') ? 'bg-white/10 text-white' : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">
-                    Beranda
-                </a>
-            @endif
+            <a href="{{ route('admin.data-wilayah.index') }}" class="flex items-center rounded-xl px-4 py-3 text-sm transition {{ request()->routeIs('admin.data-wilayah.*') ? 'bg-white/10 text-white' : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">
+                Data Wilayah
+            </a>
 
-            @if ($currentUser && $currentUser->role === 'Admin')
-                <a href="{{ route('admin.import-data.index') }}" class="flex items-center rounded-xl px-4 py-3 text-sm transition {{ request()->routeIs('admin.import-data.*') ? 'bg-white/10 text-white' : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">
-                    Import Data
-                </a>
-            @endif
-
-            @if ($currentUser && $currentUser->role === 'PKK')
-                <a href="{{ route('analisis-risiko.index') }}" class="flex items-center rounded-xl px-4 py-3 text-sm transition {{ request()->routeIs('analisis-risiko.*') ? 'bg-white/10 text-white' : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">
-                    Analisis Risiko
-                </a>
-            @endif
-
-            @if ($currentUser && $currentUser->role === 'Admin')
-                <a href="{{ route('admin.data-wilayah.index') }}" class="flex items-center rounded-xl px-4 py-3 text-sm transition {{ request()->routeIs('admin.data-wilayah.*') ? 'bg-white/10 text-white' : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">
-                    Data Wilayah
-                </a>
-            @endif
-
-            @if ($currentUser && $currentUser->role === 'Admin')
-                <a href="{{ route('admin.users.index') }}" class="flex items-center rounded-xl px-4 py-3 text-sm transition {{ request()->routeIs('admin.users.*') ? 'bg-white/10 text-white' : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">
-                    Kelola Pengguna
-                </a>
-            @endif
+            <a href="{{ route('admin.users.index') }}" class="flex items-center rounded-xl px-4 py-3 text-sm transition {{ request()->routeIs('admin.users.*') ? 'bg-white/10 text-white' : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">
+                Kelola Pengguna
+            </a>
         </nav>
     </div>
 

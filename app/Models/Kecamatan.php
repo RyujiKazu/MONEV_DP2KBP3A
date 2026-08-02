@@ -5,8 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-use App\Models\Kelurahan;
-
 class Kecamatan extends Model
 {
     use HasFactory;
@@ -27,10 +25,5 @@ class Kecamatan extends Model
     public function kelurahans()
     {
         return $this->hasMany(Kelurahan::class, 'kode_kecamatan', 'kode_kecamatan');
-    }
-
-    public function evaluasiKrs()
-    {
-        return $this->hasMany(EvaluasiKrs::class, 'kode_kecamatan', 'kode_kecamatan');
     }
 }

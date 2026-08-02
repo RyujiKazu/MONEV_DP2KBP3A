@@ -28,10 +28,10 @@
                         <div class="mt-10">
                             <p class="text-sm font-semibold tracking-[0.22em] text-[#244c6f] uppercase">Masuk</p>
                             <h1 class="mt-3 text-3xl font-semibold leading-tight text-[#1f3550] sm:text-4xl">
-                                Sistem Monitoring dan Evaluasi Keluarga Beresiko Stunting
+                                Sistem Login Pengelolaan Pengguna dan Data Wilayah
                             </h1>
                             <p class="mt-4 text-sm leading-6 text-slate-600 sm:text-base">
-                                Gunakan akun yang didaftarkan admin untuk mengakses dashboard, data lapangan, dan laporan evaluasi.
+                                Gunakan akun yang didaftarkan admin untuk mengakses pengelolaan pengguna dan data wilayah.
                             </p>
                         </div>
 
@@ -106,7 +106,7 @@
                                     DP2KBP3A Kabupaten Subang
                                 </h2>
                                 <p class="mt-4 text-sm leading-7 text-slate-600">
-                                    Akses sistem ini dikelola oleh admin dinas untuk mendukung kerja yang lebih rapi, cepat, dan terukur dalam pemantauan keluarga beresiko stunting.
+                                    Akses sistem ini dikelola oleh admin dinas untuk mendukung pengelolaan pengguna dan data wilayah.
                                 </p>
 
                                 <div class="mt-8 grid grid-cols-3 gap-3 text-left text-xs text-slate-500">
