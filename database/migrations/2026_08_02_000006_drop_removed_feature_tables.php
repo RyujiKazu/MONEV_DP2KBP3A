@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -10,8 +9,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::dropIfExists('rekap_krs_kecamatan');
-        Schema::dropIfExists('tb_evaluasi_krs');
+        // Sengaja tidak melakukan apa pun. Menghapus tabel fitur lama secara
+        // otomatis berisiko memusnahkan data produksi yang belum diarsipkan.
     }
 
     /**
@@ -19,5 +18,6 @@ return new class extends Migration
      */
     public function down(): void
     {
+        // Tidak ada perubahan skema yang perlu dibatalkan.
     }
 };

@@ -13,6 +13,10 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
+    public const ROLE_ADMIN = 'Admin';
+
+    public const ROLE_PKK = 'PKK';
+
     /**
      * The primary key for the model.
      *
@@ -71,7 +75,38 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
+            'id_user' => 'integer',
             'password' => 'hashed',
+            'role' => 'string',
+            'created_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Get every role supported by the application.
+     *
+     * @return list<string>
+     */
+    public static function roles(): array
+    {
+        return [self::ROLE_ADMIN, self::ROLE_PKK];
+    }
+
+    /**
+     * Determine whether the user has one of the given roles.
+     */
+    public function hasRole(string ...$roles): bool
+    {
+        return in_array($this->role, $roles, true);
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->hasRole(self::ROLE_ADMIN);
+    }
+
+    public function isPkk(): bool
+    {
+        return $this->hasRole(self::ROLE_PKK);
     }
 }

@@ -4,21 +4,16 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
+use Illuminate\View\View;
 
 class UserController extends Controller
 {
-    private function ensureAdmin(): void
+    public function index(Request $request): View
     {
-        abort_unless(Auth::check() && Auth::user()?->role === 'Admin', 403);
-    }
-
-    public function index(Request $request)
-    {
-        $this->ensureAdmin();
-
         $editingUser = null;
 
         if ($request->filled('edit')) {
@@ -33,39 +28,40 @@ class UserController extends Controller
         return view('admin.users', compact('users', 'editingUser'));
     }
 
-    public function edit(User $user)
+    public function edit(User $user): RedirectResponse
     {
-        $this->ensureAdmin();
-
         return redirect()->route('admin.users.index', ['edit' => $user->id_user]);
     }
 
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
-        $this->ensureAdmin();
-
         $validated = $request->validate([
             'nama_lengkap' => ['required', 'string', 'max:100'],
             'username' => ['required', 'string', 'max:50', 'unique:users,username'],
-            'password' => ['required', 'string', 'min:3'],
-            'role' => ['required', Rule::in(['Admin', 'PKK'])],
-        ]);
+            'password' => ['required', Password::min(8)],
+            'role' => ['required', Rule::in(User::roles())],
+        ], $this->validationMessages());
 
         User::create($validated);
 
         return redirect()->route('admin.users.index')->with('success', 'Pengguna berhasil ditambahkan.');
     }
 
-    public function update(Request $request, User $user)
+    public function update(Request $request, User $user): RedirectResponse
     {
-        $this->ensureAdmin();
-
         $validated = $request->validate([
             'nama_lengkap' => ['required', 'string', 'max:100'],
             'username' => ['required', 'string', 'max:50', Rule::unique('users', 'username')->ignore($user->id_user, 'id_user')],
-            'password' => ['nullable', 'string', 'min:3'],
-            'role' => ['required', Rule::in(['Admin', 'PKK'])],
-        ]);
+            'password' => ['nullable', Password::min(8)],
+            'role' => ['required', Rule::in(User::roles())],
+        ], $this->validationMessages());
+
+        if ($request->user()?->is($user) && $validated['role'] !== User::ROLE_ADMIN) {
+            return redirect()
+                ->route('admin.users.index', ['edit' => $user->id_user])
+                ->withInput($request->except('password'))
+                ->with('error', 'Peran akun yang sedang digunakan tidak dapat diubah dari Admin.');
+        }
 
         $user->nama_lengkap = $validated['nama_lengkap'];
         $user->username = $validated['username'];
@@ -80,16 +76,37 @@ class UserController extends Controller
         return redirect()->route('admin.users.index')->with('success', 'Data pengguna berhasil diperbarui.');
     }
 
-    public function destroy(User $user)
+    public function destroy(Request $request, User $user): RedirectResponse
     {
-        $this->ensureAdmin();
-
-        if (Auth::user()?->id_user === $user->id_user) {
+        if ($request->user()?->is($user)) {
             return redirect()->route('admin.users.index')->with('error', 'Akun yang sedang digunakan tidak dapat dihapus.');
         }
 
         $user->delete();
 
         return redirect()->route('admin.users.index')->with('success', 'Pengguna berhasil dihapus.');
+    }
+
+    /**
+     * Get validation messages for user management.
+     *
+     * @return array<string, string>
+     */
+    private function validationMessages(): array
+    {
+        return [
+            'nama_lengkap.required' => 'Nama lengkap wajib diisi.',
+            'nama_lengkap.string' => 'Nama lengkap harus berupa teks.',
+            'nama_lengkap.max' => 'Nama lengkap maksimal :max karakter.',
+            'username.required' => 'Username wajib diisi.',
+            'username.string' => 'Username harus berupa teks.',
+            'username.max' => 'Username maksimal :max karakter.',
+            'username.unique' => 'Username sudah digunakan.',
+            'password.required' => 'Kata sandi wajib diisi.',
+            'password.string' => 'Kata sandi harus berupa teks.',
+            'password.min' => 'Kata sandi minimal :min karakter.',
+            'role.required' => 'Peran wajib dipilih.',
+            'role.in' => 'Peran yang dipilih tidak valid.',
+        ];
     }
 }

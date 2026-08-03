@@ -20,7 +20,8 @@ return new class extends Migration
             $table->foreign('kode_kecamatan')
                 ->references('kode_kecamatan')
                 ->on('tb_kecamatan')
-                ->cascadeOnDelete();
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
         });
     }
 

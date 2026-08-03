@@ -8,7 +8,7 @@
         <title>Masuk | Sistem Monev Stunting DP2KBP3A</title>
 
         <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=plus-jakarta-sans:400,500,600,700|space-grotesk:500,700" rel="stylesheet" />
+        <link href="https://fonts.bunny.net/css?family=plus-jakarta-sans:400,500,600,700" rel="stylesheet" />
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
@@ -28,10 +28,10 @@
                         <div class="mt-10">
                             <p class="text-sm font-semibold tracking-[0.22em] text-[#244c6f] uppercase">Masuk</p>
                             <h1 class="mt-3 text-3xl font-semibold leading-tight text-[#1f3550] sm:text-4xl">
-                                Sistem Login Pengelolaan Pengguna dan Data Wilayah
+                                Sistem Monitoring dan Evaluasi Keluarga Berisiko Stunting
                             </h1>
                             <p class="mt-4 text-sm leading-6 text-slate-600 sm:text-base">
-                                Gunakan akun yang didaftarkan admin untuk mengakses pengelolaan pengguna dan data wilayah.
+                                Masuk menggunakan akun Admin atau PKK untuk mengakses dashboard kinerja dan fitur sesuai kewenangan.
                             </p>
                         </div>
 
@@ -39,7 +39,7 @@
                             @csrf
 
                             @if ($errors->any())
-                                <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                                <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">
                                     {{ $errors->first() }}
                                 </div>
                             @endif
@@ -51,6 +51,8 @@
                                     name="username"
                                     type="text"
                                     autocomplete="username"
+                                    autofocus
+                                    required
                                     placeholder="Masukkan username atau ID pengguna"
                                     class="w-full rounded-xl border border-slate-300 bg-[#f8fafc] px-4 py-3 text-sm outline-none transition placeholder:text-slate-400 focus:border-[#1f4b75] focus:bg-white focus:ring-4 focus:ring-[#dbe6ef]"
                                     value="{{ old('username') }}"
@@ -64,6 +66,7 @@
                                     name="password"
                                     type="password"
                                     autocomplete="current-password"
+                                    required
                                     placeholder="Masukkan kata sandi"
                                     class="w-full rounded-xl border border-slate-300 bg-[#f8fafc] px-4 py-3 text-sm outline-none transition placeholder:text-slate-400 focus:border-[#1f4b75] focus:bg-white focus:ring-4 focus:ring-[#dbe6ef]"
                                 >
@@ -71,14 +74,14 @@
 
                             <div class="flex items-center justify-between text-xs text-slate-500 sm:text-sm">
                                 <label class="flex items-center gap-2">
-                                    <input type="checkbox" class="h-4 w-4 rounded border-slate-300 text-[#1f4b75] focus:ring-[#1f4b75]">
+                                    <input name="remember" type="checkbox" value="1" @checked(old('remember')) class="h-4 w-4 rounded border-slate-300 text-[#1f4b75] focus:ring-[#1f4b75]">
                                     Ingat saya
                                 </label>
                             </div>
 
                             <button
                                 type="submit"
-                                class="inline-flex w-full items-center justify-center rounded-xl bg-[#1f4b75] px-5 py-3 text-sm font-medium text-white transition hover:bg-[#173a5c]"
+                                class="inline-flex w-full items-center justify-center rounded-xl bg-[#1f4b75] px-5 py-3 text-sm font-medium text-white transition hover:bg-[#173a5c] focus:outline-none focus:ring-4 focus:ring-[#b9cddd]"
                             >
                                 Masuk
                             </button>
@@ -106,7 +109,7 @@
                                     DP2KBP3A Kabupaten Subang
                                 </h2>
                                 <p class="mt-4 text-sm leading-7 text-slate-600">
-                                    Akses sistem ini dikelola oleh admin dinas untuk mendukung pengelolaan pengguna dan data wilayah.
+                                    Sistem membantu pemantauan kinerja penanganan keluarga berisiko stunting berdasarkan data wilayah dan periode evaluasi.
                                 </p>
 
                                 <div class="mt-8 grid grid-cols-3 gap-3 text-left text-xs text-slate-500">

@@ -33,4 +33,16 @@ class UserFactory extends Factory
             'created_at' => now(),
         ];
     }
+
+    /** Create an administrator account. */
+    public function admin(): static
+    {
+        return $this->state(fn (): array => ['role' => User::ROLE_ADMIN]);
+    }
+
+    /** Create a PKK account. */
+    public function pkk(): static
+    {
+        return $this->state(fn (): array => ['role' => User::ROLE_PKK]);
+    }
 }

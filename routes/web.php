@@ -1,68 +1,59 @@
 <?php
 
-use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\DataWilayahController;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Admin\RekapKrsController;
+use App\Http\Controllers\Admin\TargetIndikatorController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\LaporanEvaluasiController;
 use Illuminate\Support\Facades\Route;
 
-Route::redirect('/', '/login');
+Route::redirect('/', '/dashboard');
 
-Route::view('/login', 'login')->name('login');
-
-Route::post('/login', function (Request $request) {
-	$credentials = $request->validate([
-		'username' => ['required', 'string'],
-		'password' => ['required', 'string'],
-	]);
-
-	if (! Auth::attempt($credentials, $request->boolean('remember'))) {
-		return back()
-			->withErrors([
-				'username' => 'Username atau kata sandi tidak sesuai.',
-			])
-			->onlyInput('username');
-	}
-
-	if (Auth::user()?->role !== 'Admin') {
-		Auth::logout();
-
-		$request->session()->invalidate();
-		$request->session()->regenerateToken();
-
-		return back()
-			->withErrors([
-				'username' => 'Akun ini tidak memiliki akses ke menu yang tersedia.',
-			])
-			->onlyInput('username');
-	}
-
-	$request->session()->regenerate();
-
-	return redirect()->intended(route('admin.data-wilayah.index'));
-})->name('login.submit');
-
-Route::middleware('auth')->group(function () {
-	Route::get('/admin/pengguna', [UserController::class, 'index'])->name('admin.users.index');
-	Route::get('/admin/pengguna/{user}/edit', [UserController::class, 'edit'])->name('admin.users.edit');
-	Route::post('/admin/pengguna', [UserController::class, 'store'])->name('admin.users.store');
-	Route::put('/admin/pengguna/{user}', [UserController::class, 'update'])->name('admin.users.update');
-	Route::delete('/admin/pengguna/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
-
-	Route::get('/admin/data-wilayah', [DataWilayahController::class, 'index'])->name('admin.data-wilayah.index');
-	Route::post('/admin/data-wilayah/kecamatan', [DataWilayahController::class, 'storeKecamatan'])->name('admin.data-wilayah.kecamatan.store');
-	Route::put('/admin/data-wilayah/kecamatan/{kecamatan}', [DataWilayahController::class, 'updateKecamatan'])->name('admin.data-wilayah.kecamatan.update');
-	Route::delete('/admin/data-wilayah/kecamatan/{kecamatan}', [DataWilayahController::class, 'destroyKecamatan'])->name('admin.data-wilayah.kecamatan.destroy');
-	Route::post('/admin/data-wilayah/kelurahan', [DataWilayahController::class, 'storeKelurahan'])->name('admin.data-wilayah.kelurahan.store');
-	Route::put('/admin/data-wilayah/kelurahan/{kelurahan}', [DataWilayahController::class, 'updateKelurahan'])->name('admin.data-wilayah.kelurahan.update');
-	Route::delete('/admin/data-wilayah/kelurahan/{kelurahan}', [DataWilayahController::class, 'destroyKelurahan'])->name('admin.data-wilayah.kelurahan.destroy');
-
-	Route::post('/logout', function (Request $request) {
-		Auth::logout();
-
-		$request->session()->invalidate();
-		$request->session()->regenerateToken();
-
-		return redirect()->route('login');
-	})->name('logout');
+Route::middleware('guest')->group(function (): void {
+    Route::get('/login', [AuthController::class, 'create'])->name('login');
+    Route::post('/login', [AuthController::class, 'store'])->name('login.submit');
 });
+
+Route::middleware(['auth', 'role:Admin,PKK'])->group(function (): void {
+    Route::get('/dashboard', DashboardController::class)->name('dashboard.index');
+
+    Route::prefix('laporan-evaluasi')->name('laporan.')->group(function (): void {
+        Route::get('/', [LaporanEvaluasiController::class, 'index'])->name('index');
+        Route::get('/cetak', [LaporanEvaluasiController::class, 'print'])->name('print');
+        Route::get('/csv', [LaporanEvaluasiController::class, 'csv'])->name('csv');
+        Route::get('/pdf', [LaporanEvaluasiController::class, 'pdf'])->name('pdf');
+    });
+});
+
+Route::middleware(['auth', 'role:Admin'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function (): void {
+        Route::get('/pengguna', [UserController::class, 'index'])->name('users.index');
+        Route::get('/pengguna/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
+        Route::post('/pengguna', [UserController::class, 'store'])->name('users.store');
+        Route::put('/pengguna/{user}', [UserController::class, 'update'])->name('users.update');
+        Route::delete('/pengguna/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+
+        Route::get('/data-wilayah', [DataWilayahController::class, 'index'])->name('data-wilayah.index');
+        Route::post('/data-wilayah/kecamatan', [DataWilayahController::class, 'storeKecamatan'])->name('data-wilayah.kecamatan.store');
+        Route::put('/data-wilayah/kecamatan/{kecamatan}', [DataWilayahController::class, 'updateKecamatan'])->name('data-wilayah.kecamatan.update');
+        Route::delete('/data-wilayah/kecamatan/{kecamatan}', [DataWilayahController::class, 'destroyKecamatan'])->name('data-wilayah.kecamatan.destroy');
+        Route::post('/data-wilayah/kelurahan', [DataWilayahController::class, 'storeKelurahan'])->name('data-wilayah.kelurahan.store');
+        Route::put('/data-wilayah/kelurahan/{kelurahan}', [DataWilayahController::class, 'updateKelurahan'])->name('data-wilayah.kelurahan.update');
+        Route::delete('/data-wilayah/kelurahan/{kelurahan}', [DataWilayahController::class, 'destroyKelurahan'])->name('data-wilayah.kelurahan.destroy');
+
+        Route::resource('/data-krs', RekapKrsController::class)
+            ->parameters(['data-krs' => 'rekapKrs'])
+            ->names('rekap-krs');
+
+        Route::resource('/target-indikator', TargetIndikatorController::class)
+            ->parameters(['target-indikator' => 'targetIndikator'])
+            ->names('target-indikator');
+    });
+
+Route::post('/logout', [AuthController::class, 'destroy'])
+    ->middleware('auth')
+    ->name('logout');

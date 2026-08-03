@@ -6,19 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Models\Kecamatan;
 use App\Models\Kelurahan;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class DataWilayahController extends Controller
 {
-    private function ensureAdmin(): void
-    {
-        abort_unless(Auth::check() && Auth::user()?->role === 'Admin', 403);
-    }
-
     public function index(Request $request)
     {
-        $this->ensureAdmin();
-
         $editingKecamatan = null;
         $editingKelurahan = null;
 
@@ -45,8 +37,6 @@ class DataWilayahController extends Controller
 
     public function storeKecamatan(Request $request)
     {
-        $this->ensureAdmin();
-
         $validated = $request->validate([
             'kode_kecamatan' => ['required', 'string', 'max:20', 'unique:tb_kecamatan,kode_kecamatan'],
             'nama_kecamatan' => ['required', 'string', 'max:100'],
@@ -59,8 +49,6 @@ class DataWilayahController extends Controller
 
     public function updateKecamatan(Request $request, Kecamatan $kecamatan)
     {
-        $this->ensureAdmin();
-
         $validated = $request->validate([
             'nama_kecamatan' => ['required', 'string', 'max:100'],
         ]);
@@ -72,7 +60,11 @@ class DataWilayahController extends Controller
 
     public function destroyKecamatan(Kecamatan $kecamatan)
     {
-        $this->ensureAdmin();
+        if ($kecamatan->rekapKrs()->exists()) {
+            return redirect()
+                ->route('admin.data-wilayah.index')
+                ->with('error', 'Kecamatan tidak dapat dihapus karena sudah memiliki data KRS. Hapus data KRS terkait terlebih dahulu.');
+        }
 
         $kecamatan->delete();
 
@@ -81,8 +73,6 @@ class DataWilayahController extends Controller
 
     public function storeKelurahan(Request $request)
     {
-        $this->ensureAdmin();
-
         $validated = $request->validate([
             'kode_kelurahan' => ['required', 'string', 'max:20', 'unique:tb_kelurahan,kode_kelurahan'],
             'kode_kecamatan' => ['required', 'exists:tb_kecamatan,kode_kecamatan'],
@@ -96,8 +86,6 @@ class DataWilayahController extends Controller
 
     public function updateKelurahan(Request $request, Kelurahan $kelurahan)
     {
-        $this->ensureAdmin();
-
         $validated = $request->validate([
             'kode_kecamatan' => ['required', 'exists:tb_kecamatan,kode_kecamatan'],
             'nama_kelurahan' => ['required', 'string', 'max:100'],
@@ -110,8 +98,6 @@ class DataWilayahController extends Controller
 
     public function destroyKelurahan(Kelurahan $kelurahan)
     {
-        $this->ensureAdmin();
-
         $kelurahan->delete();
 
         return redirect()->route('admin.data-wilayah.index')->with('success', 'Data kelurahan berhasil dihapus.');
